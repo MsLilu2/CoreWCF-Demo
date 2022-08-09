@@ -14,13 +14,14 @@ namespace NetCoreClient
         static async Task Main(string[] args)
         {
             Console.Title = "WCF .Net Core Client";
+            var targetIp = "the ip of the server that your service is running on";
 
-            await CallEchoService("10.172.212.178");
+            await CallEchoService(targetIp);
 
-            var guid = await CallScriptExecutionServiceAsync("10.172.212.178");
+            var guid = await CallScriptExecutionServiceAsync(targetIp);
             Console.WriteLine(guid);
 
-            CallFileTransferService("10.172.212.178");
+            CallFileTransferService(targetIp);
         }
 
         private static async Task CallEchoService(string hostAddr)
