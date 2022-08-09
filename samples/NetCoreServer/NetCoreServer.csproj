@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>corewcf-samples-secrets</UserSecretsId>
+    <!--<SelfContained>true</SelfContained>-->
+    <!--<PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>embedded</DebugType>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>-->
+    <!--<PublishTrimmed>true</PublishTrimmed>
+    <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--<PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" />-->
+    <!--<PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="3.1.18" />-->
+
+	  <!--<PackageReference Include="CoreWCF.Http" Version="1.0.0" />-->
+	  <PackageReference Include="CoreWCF.NetTcp" Version="1.0.0" />
+	  <PackageReference Include="CoreWCF.Primitives" Version="1.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+      <None Update="App.config">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+  </ItemGroup>
+</Project>
