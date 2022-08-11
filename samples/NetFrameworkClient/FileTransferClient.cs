@@ -15,6 +15,7 @@ namespace NetFrameworkClient
         }
 
         public const string FileTransferServiceEndPoint = "net.tcp://{0}:8089/FileTransferService";
+        public const string FileTransferServiceEndPointSecure = "net.tcp://{0}:8090/FileTransferService";
 
         public bool UploadString(string s)
         {
@@ -37,8 +38,8 @@ namespace NetFrameworkClient
         {
             var netTcpBinding = new NetTcpBinding(securityMode)
             {
-                TransferMode = TransferMode.Streamed,
-                MaxReceivedMessageSize = Int64.MaxValue,
+                //TransferMode = TransferMode.Streamed,
+                //MaxReceivedMessageSize = Int64.MaxValue,
                 MaxBufferSize = 1024 * 1024,
                 ReaderQuotas =
                 {
@@ -53,10 +54,21 @@ namespace NetFrameworkClient
                 OpenTimeout = TimeSpan.FromHours(2),
                 CloseTimeout = TimeSpan.FromHours(2),
             };
+            netTcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
             var binding = new CustomBinding(netTcpBinding);
+            var tcpTransport = binding.Elements.Find<TcpTransportBindingElement>();
+            if (tcpTransport != null)
+            {
+                tcpTransport.ConnectionBufferSize = 1024 * 1024;
+            }
 
-            EndpointAddress endPointAddress = new EndpointAddress(new Uri(string.Format(FileTransferServiceEndPoint, remoteEndpoint)));
+            if (securityMode == SecurityMode.Transport)
+            {
+                var endPointAddress_Secure = new EndpointAddress(new Uri(string.Format(FileTransferServiceEndPointSecure, remoteEndpoint)));
+                return new FileTransferClient(binding, endPointAddress_Secure);
+            }
 
+            var endPointAddress = new EndpointAddress(new Uri(string.Format(FileTransferServiceEndPoint, remoteEndpoint)));
             return new FileTransferClient(binding, endPointAddress);
         }
     }

@@ -16,19 +16,26 @@ namespace NetFrameworkClient
             Console.Title = "WCF .Net Framework Client";
 
             var targetIp = "the ip of the server that your service is running on";
-            await CallEchoService(targetIp);
+            await CallEchoService(targetIp, SecurityMode.None);
 
-            var guid = await CallScriptExecutionServiceAsync(targetIp);
+            var guid = await CallScriptExecutionServiceAsync(targetIp, SecurityMode.None);
             Console.WriteLine(guid);
 
-            CallFileTransferService(targetIp);
+            CallFileTransferService(targetIp, SecurityMode.None);
+
+            //await CallEchoService(targetIp, SecurityMode.Transport);
+
+            //var guid = await CallScriptExecutionServiceAsync(targetIp, SecurityMode.Transport);
+            //Console.WriteLine(guid);
+
+            //CallFileTransferService(targetIp, SecurityMode.Transport);
         }
 
-        private static async Task CallEchoService(string hostAddr)
+        private static async Task CallEchoService(string hostAddr, SecurityMode mode)
         {
             IClientChannel channel = null;
 
-            var netTcpBinding = new NetTcpBinding(SecurityMode.None)
+            var netTcpBinding = new NetTcpBinding(mode)
             {
                 TransferMode = TransferMode.Streamed,
                 MaxReceivedMessageSize = Int64.MaxValue,
@@ -46,9 +53,24 @@ namespace NetFrameworkClient
                 OpenTimeout = TimeSpan.FromHours(2),
                 CloseTimeout = TimeSpan.FromHours(2),
             };
+            netTcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
             var binding = new CustomBinding(netTcpBinding);
+            var tcpTransport = binding.Elements.Find<TcpTransportBindingElement>();
+            if (tcpTransport != null)
+            {
+                tcpTransport.ConnectionBufferSize = 1024 * 1024;
+            }
 
-            var endpointFormat = "net.tcp://{0}:8089/EchoService";
+            string endpointFormat;
+            if (mode == SecurityMode.Transport)
+            {
+                endpointFormat = "net.tcp://{0}:8090/EchoService";
+            }
+            else
+            {
+                endpointFormat = "net.tcp://{0}:8089/EchoService";
+            }
+
             var factory = new ChannelFactory<IEchoService>(binding, new EndpointAddress(new Uri(string.Format(endpointFormat, hostAddr))));
             await Task.Factory.FromAsync(factory.BeginOpen, factory.EndOpen, null);
             try
@@ -66,20 +88,20 @@ namespace NetFrameworkClient
             }
         }
 
-        private static void CallFileTransferService(string hostAddr)
+        private static void CallFileTransferService(string hostAddr, SecurityMode mode)
         {
             var targetAddress = IPAddress.Parse(hostAddr);
-            using (var client = FileTransferClient.CreateInstance(targetAddress, SecurityMode.None))
+            using (var client = FileTransferClient.CreateInstance(targetAddress, mode))
             {
                 var result = client.UploadString("Hello World!");
                 Console.WriteLine(result);
             }
         }
 
-        private static async Task<Guid> CallScriptExecutionServiceAsync(string hostAddr)
+        private static async Task<Guid> CallScriptExecutionServiceAsync(string hostAddr, SecurityMode mode)
         {
             var targetAddress = IPAddress.Parse(hostAddr);
-            using (var client = ScriptExecutionClient.CreateInstance(targetAddress, SecurityMode.None))
+            using (var client = ScriptExecutionClient.CreateInstance(targetAddress, mode))
             {
                 try
                 {

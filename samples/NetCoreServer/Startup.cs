@@ -9,13 +9,9 @@ using CoreWCF.Description;
 
 namespace NetCoreServer
 {
-    public class Startup1
+    public class Startup
     {
-        public const int HTTP_PORT = 8088;
-        public const int HTTPS_PORT = 8443;
         public const int NETTCP_PORT = 8089;
-        // Only used on case that UseRequestHeadersForMetadataAddressBehavior is not used
-        public const string HOST_IN_WSDL = "localhost";
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -66,10 +62,6 @@ namespace NetCoreServer
 
                 builder.AddService<ScriptExecutionService>()
                 .AddServiceEndpoint<ScriptExecutionService, IScriptExecutionService>(binding, $"net.tcp://localhost:{NETTCP_PORT}/ScriptExecutionService");
-
-                //// Configure WSDL to be available over http & https
-                //var serviceMetadataBehavior = app.ApplicationServices.GetRequiredService<CoreWCF.Description.ServiceMetadataBehavior>();
-                //serviceMetadataBehavior.HttpGetEnabled = serviceMetadataBehavior.HttpsGetEnabled = true;
             });
         }
     }
